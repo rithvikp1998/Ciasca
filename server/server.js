@@ -14,4 +14,9 @@ app.use(express.static('client'))
 var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log('made socket connection', socket.id);
+
+    // Handle message event
+	socket.on('message', function(data){
+		io.sockets.emit('message', data);
+	});
 });
