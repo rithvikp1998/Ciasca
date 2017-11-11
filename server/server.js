@@ -3,17 +3,17 @@ var socketIO = require('socket.io');
 
 // App setup
 var app = express();
-var server = app.listen(4000, function(){
-    console.log('listening for requests on port 4000,');
-});
+app.use(express.static('client'));
+app.use(require('./routes.js'));
 
-// Static Files
-app.use(express.static('client'))
+var server = app.listen(4000, function(){
+    console.log('Listening for requests on port 4000');
+});
 
 // Socket setup & pass server
 var io = socketIO(server);
 io.on('connection', (socket) => {
-    console.log('made socket connection', socket.id);
+    console.log('Made socket connection', socket.id);
 
     // Handle message event
 	socket.on('message', function(data){
