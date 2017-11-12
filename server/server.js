@@ -3,8 +3,8 @@ var socketIO = require('socket.io');
 
 // App setup
 var app = express();
-app.use(express.static('client'));
 app.use(require('./routes.js'));
+app.use(express.static('client'));
 
 var server = app.listen(4000, function(){
     console.log('Listening for requests on port 4000');

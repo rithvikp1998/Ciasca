@@ -2,7 +2,9 @@
 	"name": "Ciasca",
 	"main": "server/server.js",
 	"dependencies": {
+		"cookie": "^0.3.1",
 		"express": "^4.16.2",
+		"jsonwebtoken": "^8.1.0",
 		"mongodb": "^2.2.33",
 		"socket.io": "^2.0.4"
 	},
