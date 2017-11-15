@@ -40,3 +40,19 @@ registerButton.addEventListener('click', function(){
 		});
 	}
 });
+
+socket.on('usernameTaken', function(){
+	console.log('Username already taken');
+});
+
+socket.on('verificationFailed', function(){
+	console.log('Invalid username or password');
+});
+
+socket.on('verificationSuccessful', function(){
+	console.log('User verified successfully');
+});
+
+socket.on('userAdded', function(){
+	console.log('User registered successfully');
+});
