@@ -47,7 +47,7 @@ router.get('/notfound.html', function(req, res, next){
 });
 
 router.get('/*', function(req, res, next){
-	var regex = /\.(html|js|css)/i;
+	var regex = /((login|home|notfound)\.html)|(css\/(login|client)\.css)|(js\/(login|auth|client)\.js)/i;
 	if(regex.test(req.url))
 		next();
 	else
