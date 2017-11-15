@@ -21,8 +21,12 @@ router.get('/home', function(req, res){
 });
 
 router.get('/home.html', function(req, res, next){
-	var cookieString = req.headers.cookie;
-	var parsedCookie = cookie.parse(cookieString);
+	try {
+		var cookieString = req.headers.cookie;
+		var parsedCookie = cookie.parse(cookieString);
+	} catch(err) {
+		res.redirect('/login.html');
+	}
 	if(parsedCookie == undefined || parsedCookie.ciascaJWT == undefined){
 		res.redirect('login.html');
 	} else {
@@ -43,10 +47,8 @@ router.get('/notfound.html', function(req, res, next){
 });
 
 router.get('/*', function(req, res, next){
-	/* [TODO] FIX THIS CRAP ASAP! */
-	if(req.url == '/login.html' || req.url=='/home.html' || req.url == '/notfound.html' || 
-		req.url == '/css/client.css' || req.url == '/css/login.css' || 
-		req.url == '/js/auth.js' || req.url == '/js/client.js' || req.url == '/js/login.js')
+	var regex = /\.(html|js|css)/i;
+	if(regex.test(req.url))
 		next();
 	else
 		res.redirect('notfound.html');
