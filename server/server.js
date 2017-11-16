@@ -50,7 +50,7 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 					return;
 				}
 				if(result.length>0){
-					console.log('Username already taken');
+					console.log('Username already taken', result);
 					socket.emit('usernameTaken');
 					return;
 				}
@@ -87,7 +87,15 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 						return;
 					}
 					if(res){
-						socket.emit('verificationSuccessful');
+						payload = {
+							iss: 'Ciasca',
+							userId: data.username
+						}
+						options = {
+							expiresIn: '7d'
+						}
+						token = jwt.sign(payload, config.privateKey, options);
+						socket.emit('verificationSuccessful', { token: token });
 					} else {
 						console.log('Incorrect password');
 						socket.emit('verificationFailed');

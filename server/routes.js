@@ -35,7 +35,7 @@ router.get('/home.html', function(req, res, next){
   				console.log('Error with JWT verification:', err);
   				res.redirect('login.html');
   			} else {
-  				console.log('So far so good'); // [TODO] Verify if this is all or if other checks are needed
+  				console.log('User granted access based on valid JWT');
   				next();
   			}
 		});
