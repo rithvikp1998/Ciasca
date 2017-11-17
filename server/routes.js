@@ -4,6 +4,8 @@ var cookie = require('cookie');
 var jwt = require('jsonwebtoken');
 var config = require('./config.js');
 
+router.username = '';
+
 router.get('/', function(req, res){
 	res.redirect('home.html');
 });
@@ -26,6 +28,7 @@ router.get('/home.html', function(req, res, next){
 		var parsedCookie = cookie.parse(cookieString);
 	} catch(err) {
 		res.redirect('/login.html');
+		return;
 	}
 	if(parsedCookie == undefined || parsedCookie.ciascaJWT == undefined){
 		res.redirect('login.html');
@@ -36,6 +39,7 @@ router.get('/home.html', function(req, res, next){
   				res.redirect('login.html');
   			} else {
   				console.log('User granted access based on valid JWT');
+  				router.username = decoded.userId;
   				next();
   			}
 		});

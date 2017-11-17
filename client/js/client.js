@@ -7,7 +7,6 @@ var sendButton = document.getElementById('send-button');
 
 function loadChannel(channel){
 	socket.emit('requestChannelMessages', {
-		username: 'test',
 		channel: channel
 	});
 	chatWindow.innerHTML = 'Loading...';
@@ -15,16 +14,13 @@ function loadChannel(channel){
 
 // Emit events
 window.addEventListener('load',function(){
-	socket.emit('requestUserSubscriptions', {
-		username: 'test'
-	});
+	socket.emit('requestUserSubscriptions');
 	sidebar.innerHTML = '<p>Loading...</p>';
 });
 
 sendButton.addEventListener('click', function(){
 	socket.emit('message', {
 		content: inputField.value,
-		username: 'test',
 		timestamp: new Date()
 	});
 	inputField.value = '';

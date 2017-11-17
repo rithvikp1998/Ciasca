@@ -7,7 +7,8 @@ var config = require('./config.js');
 
 // App setup
 var app = express();
-app.use(require('./routes.js'));
+var routes = require('./routes.js');
+app.use(routes);
 app.use(express.static('client'));
 
 var mongoClient = mongodb.MongoClient;
@@ -36,8 +37,10 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 	var io = socketIO(server);
 	io.on('connection', function(socket){
 	    console.log('Made socket connection', socket.id);
-
-		socket.on('message', function(data){
+		currentUser = routes.username;
+		console.log('currentUser set to', currentUser);
+	    
+	    socket.on('message', function(data){
 			database.collection('channel-general').insert(data);
 			io.sockets.emit('message', data);
 		});
@@ -102,6 +105,7 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 							expiresIn: '7d'
 						}
 						token = jwt.sign(payload, config.privateKey, options);
+						currentUser = data.username;
 						socket.emit('verificationSuccessful', { token: token });
 					} else {
 						console.log('Incorrect password');
@@ -111,8 +115,8 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 			});
 		});
 
-		socket.on('requestUserSubscriptions', function(data){
-			database.collection('users').find({ username: data.username }).toArray(function(err, result){
+		socket.on('requestUserSubscriptions', function(){
+			database.collection('users').find({ username: currentUser }).toArray(function(err, result){
 				socket.emit('userSubscriptions', result[0].channels);
 			});
 		});
