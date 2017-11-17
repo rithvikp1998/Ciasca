@@ -39,6 +39,10 @@ socket.on('usernameTaken', function(){
 	console.log('Username already taken');
 });
 
+socket.on('emailTaken', function(){
+	console.log('Email already taken');
+});
+
 socket.on('verificationFailed', function(){
 	console.log('Invalid username or password');
 });

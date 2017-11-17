@@ -25,7 +25,6 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 			database.collection('channel-general');
 		} else {
 			console.log('Database is not empty');
-			console.log('Current collections', results);
 		}
 	});
 
@@ -44,14 +43,20 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 		});
 
 		socket.on('addUser', function(data){
-			database.collection('users').find({ username: data.username }).toArray(function(err, result){
+			database.collection('users').find({ $or: [{ username: data.username }, { email: data.email }]}).toArray(function(err, result){
 				if(err){
 					console.log('Error while querying database', err);
 					return;
 				}
 				if(result.length>0){
-					console.log('Username already taken', result);
-					socket.emit('usernameTaken');
+					if(result[0].username == data.username || result[-1].username == data.username){
+						console.log('Username already taken');
+						socket.emit('usernameTaken');
+					}
+					if(result[0].email == data.email || result[-1].email == data.email){
+						console.log('Email already taken');
+						socket.emit('emailTaken');
+					}
 					return;
 				}
 				bcrypt.hash(data.password, config.saltRounds, function(err, hash){
@@ -63,8 +68,10 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 						username: data.username,
 						password: hash,
 						email: data.email,
-						emailVerified: 0
+						emailVerified: 0,
+						channels: ['general']
 					});
+					console.log('User registered');
 					socket.emit('userAdded');
 				});
 			});
@@ -101,6 +108,23 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 						socket.emit('verificationFailed');
 					}
 				});
+			});
+		});
+
+		socket.on('requestUserSubscriptions', function(data){
+			database.collection('users').find({ username: data.username }).toArray(function(err, result){
+				socket.emit('userSubscriptions', result[0].channels);
+			});
+		});
+
+		socket.on('requestChannelMessages', function(data){
+			/* [TODO] Verify if user is authorised to view this channel's messages */
+			database.collection('channel-'+data.channel).find().toArray(function(err, result){
+				if(err){
+					console.log('Error while getting channel messages');
+					return;
+				}
+				socket.emit('channelMessages', result);
 			});
 		});
 	});
