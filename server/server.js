@@ -41,8 +41,13 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 		console.log('currentUser set to', currentUser);
 	    
 	    socket.on('message', function(data){
-			database.collection('channel-general').insert(data);
-			io.sockets.emit('message', data);
+	    	response = {
+				username: currentUser,
+				content: data.content,
+				timestamp: data.timestamp
+			};
+			database.collection('channel-general').insert(response);
+			io.sockets.emit('message', response);
 		});
 
 		socket.on('addUser', function(data){
@@ -51,12 +56,23 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 					console.log('Error while querying database', err);
 					return;
 				}
-				if(result.length>0){
-					if(result[0].username == data.username || result[-1].username == data.username){
+				if(result.length == 1){
+					if(result[0].username == data.username){
 						console.log('Username already taken');
 						socket.emit('usernameTaken');
 					}
-					if(result[0].email == data.email || result[-1].email == data.email){
+					if(result[0].email == data.email){
+						console.log('Email already taken');
+						socket.emit('emailTaken');
+					}
+					return;
+				}
+				if(result.length == 2){
+					if(result[0].username == data.username || result[1].username == data.username){
+						console.log('Username already taken');
+						socket.emit('usernameTaken');
+					}
+					if(result[0].email == data.email || result[1].email == data.email){
 						console.log('Email already taken');
 						socket.emit('emailTaken');
 					}
