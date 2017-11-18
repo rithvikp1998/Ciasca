@@ -24,6 +24,7 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 			database.collection('users');
 			database.collection('channels');
 			database.collection('channel-general');
+			database.collection('channel-random');
 		} else {
 			console.log('Database is not empty');
 		}
@@ -44,9 +45,10 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 	    	response = {
 				username: currentUser,
 				content: data.content,
-				timestamp: data.timestamp
+				timestamp: data.timestamp,
+				channel: data.channel
 			};
-			database.collection('channel-general').insert(response);
+			database.collection('channel-'+data.channel).insert(response);
 			io.sockets.emit('message', response);
 		});
 
@@ -88,7 +90,7 @@ mongoClient.connect('mongodb://localhost:27017/ciasca', function(err, database){
 						password: hash,
 						email: data.email,
 						emailVerified: 0,
-						channels: ['general']
+						channels: ['general', 'random']
 					});
 					console.log('User registered');
 					socket.emit('userAdded');

@@ -4,12 +4,15 @@ var sidebar = document.getElementById('sidebar');
 var chatWindow = document.getElementById('chat-window');
 var inputField = document.getElementById('input-field');
 var sendButton = document.getElementById('send-button');
+var currentChannel = 'general';
 
 function loadChannel(channel){
 	socket.emit('requestChannelMessages', {
 		channel: channel
 	});
 	chatWindow.innerHTML = 'Loading...';
+	currentChannel = channel;
+	console.log('currentChannel set to', channel);
 }
 
 // Emit events
@@ -20,6 +23,7 @@ window.addEventListener('load',function(){
 
 sendButton.addEventListener('click', function(){
 	socket.emit('message', {
+		channel: currentChannel,
 		content: inputField.value,
 		timestamp: new Date()
 	});
@@ -29,7 +33,8 @@ sendButton.addEventListener('click', function(){
 
 // Listen for events
 socket.on('message', function(message){
-    chatWindow.innerHTML += '<p><strong>' + message.username + ': </strong>' + message.content + ' ' + message.timestamp + '</p>';
+	if(message.channel == currentChannel)
+    	chatWindow.innerHTML += '<p><strong>' + message.username + ': </strong>' + message.content + ' ' + message.timestamp + '</p>';
 });
 
 socket.on('userSubscriptions', function(data){
