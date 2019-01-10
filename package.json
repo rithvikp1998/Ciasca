@@ -8,8 +8,5 @@
 		"jsonwebtoken": "^8.1.0",
 		"mongodb": "^2.2.33",
 		"socket.io": "^2.0.4"
-	},
-	"devDependencies": {
-		"nodemon": "^1.12.1"
 	}
 }
